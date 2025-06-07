@@ -7,9 +7,16 @@ class Segmentacion:
     @staticmethod
     def calcular_categoria(respuestas: list[dict]) -> dict:
         """
-        Analiza las respuestas agrupadas por dimensión (cada una con una lista de números del 1 al 5)
-        y retorna una categoría basada en puntajes.
-        También imprime los valores textuales asociados.
+        Analiza las respuestas agrupadas por dimensión (cada una con una lista de valores del 1 al 5).
+        Calcula un puntaje total basado en las respuestas y determina una categoría de homofobia 
+        según el porcentaje obtenido. También imprime el significado textual de cada respuesta.
+
+        Parámetros:
+        respuestas (list[dict]): Lista de diccionarios, cada uno con una clave "respuestas" que contiene 
+                                una lista de números enteros entre 1 y 5.
+
+        Retorna:
+        dict: Un diccionario con el porcentaje calculado y la categoría correspondiente.
         """
         texto_respuestas = {
             5: "Totalmente en desacuerdo",
@@ -24,7 +31,6 @@ class Segmentacion:
 
         print("Respuestas recibidas y su significado:")
 
-        #Muestra las respuestas y su significado
         for grupo in respuestas:
             valores = grupo.get("respuestas", [])
             for valor in valores:
