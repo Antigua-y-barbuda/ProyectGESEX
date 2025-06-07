@@ -3,7 +3,7 @@ from google.auth.transport import requests
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 # Configuración (usa variables de entorno en producción!)
 GOOGLE_CLIENT_ID = "58428553625-ae0vqt34c9jaiul7gb66c3u9b34fd2g9.apps.googleusercontent.com"
@@ -39,7 +39,7 @@ def verify_google_token(token: str):
 
 def create_jwt_token(email: str):
     """Crea un JWT para sesiones en tu sistema"""
-    expires = datetime.utcnow() + timedelta(hours=2)
+    expires = datetime.now(timezone.utc) + timedelta(hours=2)
     payload = {
         "sub": email,
         "exp": expires
