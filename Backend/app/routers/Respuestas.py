@@ -11,10 +11,26 @@ from app.schemas.Respuestas import RespuestaCreate, RespuestaOut
 
 router = APIRouter(prefix="/Respuestas", tags=["Respuestas"])
 
-# POST para recibir y guardar respuestas
 @router.post("/", response_model=RespuestaOut)
 def enviar_respuesta(respuesta: RespuestaCreate, db: Session = Depends(get_db)):
-    # Verifica si ya existe una respuesta con ese test_id y fingerprint
+    """
+    Recibe y guarda una respuesta a un test.
+
+    - Verifica si ya existe una respuesta para el mismo test y fingerprint (previene duplicados).
+    - Si no existe, guarda la nueva respuesta en la base de datos.
+    - Calcula la categoría del usuario según sus respuestas y la actualiza en el test correspondiente.
+    - Retorna la respuesta guardada.
+
+    Args:
+        respuesta (RespuestaCreate): Datos de la respuesta enviada por el usuario.
+        db (Session): Sesión de base de datos proporcionada por FastAPI.
+
+    Returns:
+        RespuestaOut: Objeto con la información de la respuesta guardada.
+
+    Raises:
+        HTTPException: Si ya existe una respuesta para ese test y fingerprint.
+    """
     existente = db.query(Respuesta).filter_by(
         test_id=respuesta.test_id,
         fingerprint=respuesta.fingerprint
@@ -36,10 +52,8 @@ def enviar_respuesta(respuesta: RespuestaCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(nueva)
 
-    # Calcular categoría basada en las respuestas
     categoria = Segmentacion.calcular_categoria(nueva.respuestas)
 
-    # Actualizar la categoría del usuario
     test = db.query(Test).filter_by(id=respuesta.test_id).first()
     if test:
         test.categoria = categoria

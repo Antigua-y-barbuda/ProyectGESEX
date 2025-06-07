@@ -1,1 +1,11 @@
 database.db
+
+#ignore python cache files
+__pycache__/
+#ignore python bytecode files
+*.py[cod]
+#ignore virtual environment
+venv/
+
+#ignore .env
+.env
