@@ -4,10 +4,16 @@ from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from datetime import datetime, timedelta, timezone
+import os
+from dotenv import load_dotenv
+
+# Carga las variables de entorno desde un archivo .env
+load_dotenv()
+
 
 # Configuración (usa variables de entorno en producción!)
-GOOGLE_CLIENT_ID = "58428553625-ae0vqt34c9jaiul7gb66c3u9b34fd2g9.apps.googleusercontent.com"
-SECRET_KEY = "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"  # Cambia esto!
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID") 
+SECRET_KEY = os.getenv("SECRET_KEY")  # Cambia esto!
 ALGORITHM = "HS256"
 
 # Para extraer el token desde Authorization: Bearer <token>

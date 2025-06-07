@@ -16,18 +16,36 @@ interface Props {
   data: any;
 }
 
+const EDAD_RANGOS = [
+  "15-20",
+  "21-30",
+  "31-40",
+  "41-50",
+  "51-60",
+  "Mayor de 60",
+];
+
+const extraerDimensiones = (raw: any): string[] => {
+  const dimensionesDetectadas = Object.values(raw).find(
+    (grupo) => grupo && Object.keys(grupo).length > 0
+  );
+  return dimensionesDetectadas ? Object.keys(dimensionesDetectadas) : [];
+};
+
+const construirDatosPorEdad = (raw: any, keys: string[]): any[] => {
+  return EDAD_RANGOS.map((rango) => {
+    const grupo = raw[rango] || {};
+    const fila: any = { rango };
+    keys.forEach((dim) => {
+      fila[dim] = grupo[dim] || 0;
+    });
+    return fila;
+  });
+};
+
 const PromedioPorEdad: React.FC<Props> = ({ testId }) => {
   const [data, setData] = useState<any[]>([]);
   const [dimensiones, setDimensiones] = useState<string[]>([]);
-
-  const EDAD_RANGOS = [
-    "15-20",
-    "21-30",
-    "31-40",
-    "41-50",
-    "51-60",
-    "Mayor de 60",
-  ];
 
   useEffect(() => {
     if (!testId) return;
@@ -35,24 +53,10 @@ const PromedioPorEdad: React.FC<Props> = ({ testId }) => {
     obtenerEstadisticasPorEdad(testId)
       .then((res) => {
         const raw = res.data;
-
-        // Extraer las dimensiones desde el primer rango que tenga datos
-        const dimensionesDetectadas =
-          Object.values(raw).find((grupo) => grupo && Object.keys(grupo).length > 0);
-        const keys = dimensionesDetectadas ? Object.keys(dimensionesDetectadas) : [];
+        const keys = extraerDimensiones(raw);
         setDimensiones(keys);
 
-        const datosCompletos = EDAD_RANGOS.map((rango) => {
-          const grupo = raw[rango] || {};
-          const fila: any = { rango };
-
-          keys.forEach((dim) => {
-            fila[dim] = grupo[dim] || 0;
-          });
-
-          return fila;
-        });
-
+        const datosCompletos = construirDatosPorEdad(raw, keys);
         setData(datosCompletos);
       })
       .catch((err) =>
